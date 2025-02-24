@@ -7,16 +7,16 @@
 
 import Foundation
 
-enum UserError: Error {
+enum UserError: Error, Equatable {
     case userNotFound(String)
     case invalidEmail(String)
 }
 
 
 class UserController : ObservableObject {
-    @Published var users: [User] = []
+    @Published var users: [User]
     
-    init(user: User) {
+    init(users: [User]) {
         self.users = users
     }
     
@@ -53,15 +53,19 @@ class UserController : ObservableObject {
     
     
     // Update user
-    func updateUser(id: UUID, username: String?, email: String?) throws -> User {
+    func updateUser(id: UUID, username: String? = nil, email: String? = nil) throws -> User {
         
         var userToUpdate = try getUser(id: id)
         
+        if let email = email {
+            guard isValidEmail(email) else {
+                throw UserError.invalidEmail("Invalid email")
+            }
+            userToUpdate.email = email
+        }
+        
         if let username = username {
             userToUpdate.username = username
-        }
-        if let email = email {
-            userToUpdate.email = email
         }
         
         if let i = users.firstIndex(where: { $0.id == id }) {
