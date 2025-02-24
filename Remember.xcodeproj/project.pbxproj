@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		36CA2FAA2D6C9B7C00C2374E /* Readme.md in Sources */ = {isa = PBXBuildFile; fileRef = 36CA2FA92D6C9B7200C2374E /* Readme.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		ADCA08462D56023000A777BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -17,6 +21,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		36CA2FA92D6C9B7200C2374E /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		AD577EA22D3A53C0001F5C0A /* Remember.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Remember.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ADCA08422D56023000A777BC /* RememberTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RememberTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -82,6 +87,7 @@
 				AD577EA42D3A53C0001F5C0A /* Remember */,
 				ADCA08432D56023000A777BC /* RememberTests */,
 				AD577EA32D3A53C0001F5C0A /* Products */,
+				36CA2FA92D6C9B7200C2374E /* Readme.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -203,6 +209,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				36CA2FAA2D6C9B7C00C2374E /* Readme.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
