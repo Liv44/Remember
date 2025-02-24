@@ -10,35 +10,84 @@ import SwiftUI
 
 struct CapsuleListView: View {
     @EnvironmentObject var capsuleController: CapsuleController
+    var lockedCapsules: [Capsule] {
+        capsuleController.capsules.filter { $0.isLocked }
+    }
+
+    var openedCapsules: [Capsule] {
+        capsuleController.capsules.filter { !$0.isLocked }
+    }
     
     var body: some View {
         NavigationView {
-            List(capsuleController.capsules) { capsule in
-                NavigationLink(destination: CapsuleDetailView(capsule: capsule)) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(capsule.title)
-                                .font(.headline)
-                            Text(capsule.description)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                        Spacer()
-                        Text(DateFormatter.dateFormatter.string(from: capsule.creationDate))
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        
-                        if capsule.isLocked {
-                            Image(systemName: "lock.fill") 
-                                .foregroundColor(.gray)
-                                .padding(.leading, 8)
+            VStack(alignment: .leading){
+                VStack(alignment: .leading, spacing: 0){
+                    Text("Capsules Ouvertes (\(openedCapsules.count))")
+                        .fontWeight(Font.Weight.semibold)
+                        .fontDesign(Font.Design.rounded)
+                        .font(.system(size: 20))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            ForEach(openedCapsules, id: \.id) { capsule in
+                                CardCapsuleListComponent(capsule: capsule)
+                            }
                         }
                     }
-                    .padding()
+                    Spacer(minLength:20)
                 }
-            }
+
+                VStack(alignment: .leading, spacing: 0){
+                    Text("Capsules Fermées (\(lockedCapsules.count))")
+                        .fontWeight(Font.Weight.semibold)
+                        .fontDesign(Font.Design.rounded)
+                        .font(.system(size: 20))
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack {
+                            ForEach(lockedCapsules, id: \.id) { capsule in
+                                CardCapsuleListComponent(capsule: capsule)
+                            }
+                        }
+                    }
+                    Spacer(minLength: 20)
+                }
+                Spacer(minLength: 50)
+            }.padding()
             .navigationTitle("Liste des Capsules")
         }
     }
 
+}
+
+#Preview {
+    let capsuleController = CapsuleController(capsules: [
+        Capsule(
+            id: UUID(),
+            title: "Paris 2024",
+            description: "Description de la capsule 1",
+            creationDate: Date(),
+            unlockDate: Date().addingTimeInterval(86400), // 1 jour après
+            medias: [
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil),
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil),
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil)
+            ],
+            location: "Paris, France",
+            isLocked: false
+        ),
+        Capsule(
+            id: UUID(),
+            title: "Paris 2024",
+            description: "Description de la capsule 1",
+            creationDate: Date(),
+            unlockDate: Date().addingTimeInterval(86400), // 1 jour après
+            medias: [
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil),
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil),
+                Media(id: UUID(), url: "https://picsum.photos/1000/1000", type: .Image, image: nil)
+            ],
+            location: "Paris, France",
+            isLocked: true
+        )
+    ])
+    CapsuleListView().environmentObject(capsuleController)
 }
