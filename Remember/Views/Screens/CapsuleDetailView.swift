@@ -44,24 +44,35 @@ struct CapsuleDetailView: View {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(capsule.medias) { media in
                             if media.type == .Image {
-                                // Affichage des images
-                                AsyncImage(url: URL(string: media.url)) { phase in
-                                    switch phase {
-                                    case .empty:
-                                        ProgressView() // Chargement de l'image
-                                    case .success(let image):
-                                        image
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(height: 150)
-                                            .cornerRadius(8)
-                                            .shadow(radius: 5)
-                                            .blur(radius: capsule.isLocked && Date() < capsule.unlockDate ? 5 : 0) // Flou si verrouillé
-                                    case .failure:
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.red)
-                                    @unknown default:
-                                        EmptyView()
+                                if let image = media.image {
+                                    // Affichage des images
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 150)
+                                        .cornerRadius(8)
+                                        .shadow(radius: 5)
+                                        .blur(radius: capsule.isLocked && Date() < capsule.unlockDate ? 5 : 0) // Flou si verrouillé
+                                } else if let url = media.url, let imageUrl = URL(string: url) {
+                                    // Affichage des images à partir de l'URL
+                                    AsyncImage(url: imageUrl) { phase in
+                                        switch phase {
+                                        case .empty:
+                                            ProgressView() // Chargement de l'image
+                                        case .success(let image):
+                                            image
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 150)
+                                                .cornerRadius(8)
+                                                .shadow(radius: 5)
+                                                .blur(radius: capsule.isLocked && Date() < capsule.unlockDate ? 5 : 0) // Flou si verrouillé
+                                        case .failure:
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(.red)
+                                        @unknown default:
+                                            EmptyView()
+                                        }
                                     }
                                 }
                             }

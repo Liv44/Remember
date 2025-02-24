@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUICore
+import MapKit
 
 
 struct Capsule : Identifiable {
@@ -28,6 +29,7 @@ enum MediaType {
 
 struct Media : Identifiable {
     let id: UUID
-    var url: String
+    var url: String?
     let type: MediaType
+    let image: UIImage?
 }
