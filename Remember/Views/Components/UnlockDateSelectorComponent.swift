@@ -10,38 +10,73 @@ import SwiftUI
 import SwiftUI
 
 struct UnlockDateSelectorComponent: View {
-    @Binding var selectedDate: Date // La date sélectionnée par l'utilisateur
-    var minimumDate: Date? = nil // Date minimale autorisée
-    var maximumDate: Date? = nil // Date maximale autorisée
-    var title: String = "Sélectionner une date" // Titre du sélecteur
+    @Binding var selectedDate: Date
+    var minimumDate: Date? = nil
+    var maximumDate: Date? = nil
+    var title: String = "Sélectionner une date"
+    
+    @State private var isShowingModal: Bool = false
+
 
     var body: some View {
-        VStack {
-            Text(title)
-                .font(.headline)
-                .padding(.bottom, 10)
-            
-            DatePicker(
-                "",
-                selection: $selectedDate,
-                in: (minimumDate ?? .distantPast)...(maximumDate ?? .distantFuture),
-                displayedComponents: [.date]
-            )
-            .datePickerStyle(GraphicalDatePickerStyle()) // Style graphique
-            .labelsHidden() // Cache le label par défaut du sélecteur
+        
+        Button(action: {
+            isShowingModal.toggle()
+        }) {
+            HStack {
+                Text(formattedDate(selectedDate)) // Date affichée
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "calendar")
+                    .foregroundColor(.primary)
+            }
+            .padding()
+            .background(Color(UIColor.systemGray6))
+            .cornerRadius(8)
+            .shadow(radius: 1)
+        }.sheet(isPresented: $isShowingModal) {
+            NavigationView {
+                    VStack {
+                        DatePicker(
+                            "",
+                            selection: $selectedDate,
+                            in: (minimumDate ?? .distantPast)...(maximumDate ?? .distantFuture),
+                            displayedComponents: [.date]
+                        )
+                        .datePickerStyle(GraphicalDatePickerStyle())
+                        .labelsHidden()
+                        .padding()
 
-            Text("Date sélectionnée : \(formattedDate(selectedDate))")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding(.top, 10)
+                        Spacer()
+
+                        Button(action: {
+                            isShowingModal = false
+                        }) {
+                            Text("Valider")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .cornerRadius(10)
+                                .shadow(radius: 2)
+                        }
+                        .padding()
+                    }
+                    .navigationTitle(title)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Annuler") {
+                                isShowingModal = false
+                            }
+                        }
+                    }
+                }
         }
-        .padding()
-        .background(Color(UIColor.systemGray6))
-        .cornerRadius(10)
-        .shadow(radius: 5)
+        
     }
-
-    // Formatte la date pour l'afficher sous forme lisible
+    
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium

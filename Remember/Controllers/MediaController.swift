@@ -17,7 +17,7 @@ class MediaController {
         
         switch status {
         case.notDetermined:
-            PHPhotoLibrary.requestAuthorization { newStatus in
+                                                                                                                                                                                                    PHPhotoLibrary.requestAuthorization { newStatus in
                 completion(newStatus == .authorized || newStatus == .limited)
             }
         case.authorized, .limited:
