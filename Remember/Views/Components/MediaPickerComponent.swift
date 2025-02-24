@@ -10,7 +10,8 @@ import PhotosUI
 
 struct MediaPickerComponent: View {
     @State private var pickerItems: [PhotosPickerItem] = []
-    @State private var selectedImages: [UIImage] = []
+    @Binding var selectedImages: [UIImage]
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {

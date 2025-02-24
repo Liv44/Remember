@@ -10,36 +10,33 @@ import SwiftUI
 import MapKit
 
 struct CreateCapsuleView: View {
-    @State private var titreCapsule: String = ""
-    @State private var lieuCapsule: String = ""
-    @State private var collaborateurCapsule: String = ""
-    @State private var contenuCapsule: String = ""
+    @EnvironmentObject var capsuleController: CapsuleController
+    var onCapsuleCreated: () -> Void
+
+    @State private var title: String = ""
+    @State private var location: String = ""
+    @State private var collaborator: String = ""
+    @State private var description: String = ""
     @State private var selectedDate: Date = Date()
     
     @State private var unlockDate: Date = Date()
     
+    @State private var selectedImages: [UIImage] = []
+    
+    @State private var errorMessage: String?
+    
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("Titre")) {
-                    TextField("Entrez un titre", text: $titreCapsule)
+                    TextField("Entrez un titre", text: $title)
                 }
-                
+                Section(header: Text("Description")) {
+                    TextField("Description de la capsule", text: $description)
+                }
                 Section {
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("Date de création")
-                            UnlockDateSelectorComponent(
-                                selectedDate: $selectedDate,
-                                minimumDate: Date(),
-                                maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-                                title: "Choisissez une date"
-                            )
-                        }
-                        .frame(maxWidth: .infinity)
-                        Spacer(minLength: 20)
-
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Date de fermeture")
                             UnlockDateSelectorComponent(
@@ -55,19 +52,48 @@ struct CreateCapsuleView: View {
                     .listRowBackground(Color.clear)
                 }
                 Section(header: Text("Lieu")) {
-                    TextField("Entrez le lieu de la capsule", text: $lieuCapsule)
-                }
-                Section(header: Text("Collaborateurs")) {
-                    TextField("Collaborateurs de la capsule", text: $collaborateurCapsule)
+                    TextField("Entrez le lieu de la capsule", text: $location)
                 }
                 Section(header: Text("Médias")) {
-                    MediaPickerComponent()
+                    MediaPickerComponent(selectedImages: $selectedImages)
                 }
                 .listRowBackground(Color.clear)
                 
                 Section{
                     Button(action: {
                        print("Créer une capsule")
+                        do {
+                            let medias = selectedImages.map { image in
+                               Media(id: UUID(), url: nil, type: .Image, image: image)
+                           }
+                            try _ = capsuleController.createCapsule(
+                                title: title,
+                                description: description,
+                                unlockDate: unlockDate,
+                                medias: medias,
+                                location: location
+                            )
+                            // Réinitialiser les champs après la création réussie
+                            title = ""
+                            location = ""
+                            collaborator = ""
+                            description = ""
+                            selectedDate = Date()
+                            unlockDate = Date()
+                            errorMessage = nil
+                            onCapsuleCreated()
+                        } catch {
+                            if let capsuleError = error as? CapsuleError {
+                                switch capsuleError {
+                                case .capsuleNotFound(let message):
+                                    errorMessage = message
+                                case .invalidDate(let message):
+                                    errorMessage = message
+                                }
+                            } else {
+                                errorMessage = "Une erreur inconnue s'est produite."
+                            }
+                        }
                        // Ajoute ici la logique pour créer une capsule
                    }) {
                        Text("Créer une capsule")
@@ -79,7 +105,13 @@ struct CreateCapsuleView: View {
                            .cornerRadius(8)
                            .padding(.horizontal)
                    }
-                   .padding(.vertical)
+                
+                    
+                    if let errorMessage = errorMessage {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .padding()
+                    }
                 }
                 .listRowBackground(Color.clear)
                 
