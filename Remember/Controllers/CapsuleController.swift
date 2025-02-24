@@ -67,7 +67,7 @@ class CapsuleController: ObservableObject {
     }
     
     func deleteCapsule(id: UUID) throws {
-        var capsuleToDelete = try getCapsuleById(id: id)
+        _ = try getCapsuleById(id: id)
         
         capsules.removeAll { $0.id == id }
     }

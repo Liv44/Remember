@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct RememberApp: App {
+    @StateObject private var userController = UserController(users: [User(id: UUID(), username: "louisteilliais", email: "louisteilliais@gmail.com", capsules: []), User(id: UUID(), username: "oliviamoreau", email: "oliviamoreau@gmail.com", capsules: [])])
+    
     @StateObject private var capsuleController = CapsuleController(capsules: [
             Capsule(
                 id: UUID(),
@@ -44,7 +46,7 @@ struct RememberApp: App {
         ])
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(capsuleController)
-        }
+            ContentView().environmentObject(capsuleController).environmentObject(userController)
+        }   
     }
 }

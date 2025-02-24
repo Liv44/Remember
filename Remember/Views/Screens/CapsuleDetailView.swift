@@ -11,34 +11,67 @@ struct CapsuleDetailView: View {
     
     let columns = [GridItem(.flexible()), GridItem(.flexible())] // 2 colonnes avec un espacement flexible
     
+    // Fonction pour calculer le nombre de jours entre deux dates
+    func timeBetween(startDate: Date, endDate: Date) -> (days: Int, hours: Int, minutes: Int) {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.day, .hour, .minute], from: startDate, to: endDate)
+        return (components.day ?? 0, components.hour ?? 0, components.minute ?? 0)
+    }
+    
     var body : some View {
         ScrollView {
             // Affichage du titre avec un cadenas si la capsule est verrouillée
-            if capsule.isLocked {
-                HStack {
-                    Text(capsule.title)
-                        .foregroundColor(.primary)
-                    Spacer()
-                    Image(systemName: "lock.fill")
-                        .foregroundColor(.primary)
+            HStack {
+                if(capsule.isLocked) {
+                    VStack {
+                        Image(systemName: "lock.fill")
+                            .resizable()
+                            .aspectRatio(1, contentMode: .fit)
+                    }
+                    .frame(width: 35, height: 50)
                 }
-            } else {
                 Text(capsule.title)
                     .foregroundColor(.primary)
-                    .font(.headline)
+                    .fontWeight(Font.Weight.bold)
+                    .fontDesign(Font.Design.rounded)
+                    .font(.system(size: 50))
+            }
+            if capsule.isLocked {
+                let timeComponents = timeBetween(startDate: Date(), endDate: capsule.unlockDate)
+                if timeComponents.days > 0 {
+                    Text("Ouverture dans : \(timeComponents.days) jours")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                } else {
+                    Text("Ouverture dans : \(timeComponents.hours) heures et \(timeComponents.minutes) minutes")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                }
+            }
+            Spacer().frame(width:30)
+            Text("Données")
+                .foregroundColor(.primary)
+                .fontWeight(Font.Weight.bold)
+                .fontDesign(Font.Design.rounded)
+                .font(.system(size: 20))
+            Spacer().frame(width:20)
+            VStack(alignment: .leading,spacing: 6){
+                // Affichage de la description
+                Text("Description : " + capsule.description).multilineTextAlignment(.leading)
+                Text("Date d'ouverture: \(capsule.unlockDate, formatter: DateFormatter.dateFormatter)")
+                Text("Date de création: \(capsule.creationDate, formatter: DateFormatter.dateFormatter)")
+                Text("Nombre de photos à découvrir : \(capsule.medias.count)")
             }
             
-            // Affichage de la description
-            Text(capsule.description)
-                .font(.body)
-                .padding([.horizontal])
+            Spacer(minLength: 20)
             
             // Affichage des médias (images/vidéos) dans une grille
             if !capsule.medias.isEmpty {
                 VStack {
-                    Text("Médias de la capsule")
-                        .font(.subheadline)
-                        .padding([.top, .horizontal])
+                    Text("Photos")
+                        .fontWeight(Font.Weight.bold)
+                        .fontDesign(Font.Design.rounded)
+                        .font(.system(size: 20))
                     
                     // Grille avec 2 colonnes
                     LazyVGrid(columns: columns, spacing: 16) {
@@ -86,19 +119,7 @@ struct CapsuleDetailView: View {
                     .foregroundColor(.gray)
                     .padding([.horizontal])
             }
-            
-            // Affichage des dates
-            Text("Date de création: \(capsule.creationDate, formatter: DateFormatter.dateFormatter)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding([.horizontal])
-
-            Text("Date de déverrouillage: \(capsule.unlockDate, formatter: DateFormatter.dateFormatter)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding([.horizontal])
         }
-        .navigationTitle(capsule.title)
     }
 }
 

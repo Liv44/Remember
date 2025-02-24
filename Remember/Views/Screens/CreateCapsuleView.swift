@@ -32,21 +32,11 @@ struct CreateCapsuleView: View {
                 Section(header: Text("Titre")) {
                     TextField("Entrez un titre", text: $title)
                 }
-                
+                Section(header: Text("Description")) {
+                    TextField("Description de la capsule", text: $description)
+                }
                 Section {
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("Date de création")
-                            UnlockDateSelectorComponent(
-                                selectedDate: $selectedDate,
-                                minimumDate: Date(),
-                                maximumDate: Calendar.current.date(byAdding: .year, value: 1, to: Date()),
-                                title: "Choisissez une date"
-                            )
-                        }
-                        .frame(maxWidth: .infinity)
-                        Spacer(minLength: 20)
-
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Date de fermeture")
                             UnlockDateSelectorComponent(
@@ -63,9 +53,6 @@ struct CreateCapsuleView: View {
                 }
                 Section(header: Text("Lieu")) {
                     TextField("Entrez le lieu de la capsule", text: $location)
-                }
-                Section(header: Text("Collaborateurs")) {
-                    TextField("Collaborateurs de la capsule", text: $collaborator)
                 }
                 Section(header: Text("Médias")) {
                     MediaPickerComponent(selectedImages: $selectedImages)
@@ -118,7 +105,7 @@ struct CreateCapsuleView: View {
                            .cornerRadius(8)
                            .padding(.horizontal)
                    }
-                   .padding(.vertical)
+                
                     
                     if let errorMessage = errorMessage {
                         Text(errorMessage)
